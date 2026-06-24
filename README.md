@@ -1,287 +1,196 @@
-# Patchright Browser
+# patchright-browser
 
-MCP server yang memberikan AI agent browser sungguhan. Navigate, click, type, screenshot — semua via MCP protocol.
+[![MCP](https://img.shields.io/badge/MCP-StreamableHTTP-blue)](https://modelcontextprotocol.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-```
-AI Agent ──→ patchright-browser ──→ Chromium
-             (MCP protocol)       (multi-profile)
-```
+MCP server for browser automation via Chromium. Multi-profile, headed/headless, StreamableHTTP protocol.
 
-## Apa Ini?
+## Install for AI Agents
 
-Patchright Browser adalah MCP server yang memungkinkan AI agent (Hermes, Claude, Cursor, dll) mengontrol browser Chromium secara real. Agent bisa buka website, klik tombol, isi form, ambil screenshot, upload file — semua otomatis.
-
-**Use cases:**
-- Automasi social media (post, reply, DM)
-- Scrape data dari website
-- Automasi form submission
-- Screenshot website untuk monitoring
-- Multi-account management
-- Browser-based research
-
-## Fitur
-
-### Multi-Profile
-Setiap profile = browser terpisah (cookies, session, login berbeda). Bisa jalan beberapa profile sekaligus.
-
-```
-Profile "rickicode" → Login Instagram, Threads, X
-Profile "work"      → Login Google, Slack
-Profile "client-a"  → Login akun client
-```
-
-### Headed + Headless
-- **Headed** — browser visible (GUI), bisa lihat apa yang terjadi
-- **Headless** — invisible, cocok untuk server/automation
-- Auto-detect: kalau ada display → headed, kalau tidak → headless
-
-### MCP Protocol
-Standar Model Context Protocol. Compatible dengan:
-- Hermes Agent
-- Claude Desktop
-- Cursor
-- Any MCP client
-
-### Web Dashboard
-Password-protected dashboard untuk manage profiles:
-- List semua profiles + status online/offline
-- Lihat active tabs per profile
-- Monitor uptime, last used, viewport
-- Login/logout dengan session cookies
-
-### Skills (Automation Templates)
-Skills siap pakai untuk common tasks:
-- **x-search** — Cari & extract data dari X/Twitter
-- **threads-search** — Cari & extract data dari Threads
-- **instagram-automation** — Instagram DM, post, comment
-- **threads-automation** — Threads post, reply, DM
-- **x-automation** — X.com post, reply, DM
-
-## Install
+AI agents can auto-install by running:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/rickicode/patchright-browser/main/install.sh | bash
+git clone https://github.com/rickicode/patchright-browser.git ~/.patchright-browser/repo && cd ~/.patchright-browser/repo && bash install.sh
 ```
 
-Atau manual:
+Or add to your MCP config directly:
+
+```json
+{
+  "mcpServers": {
+    "patchright": {
+      "url": "http://127.0.0.1:9877/mcp/",
+      "connectTimeout": 30000
+    }
+  }
+}
+```
+
+## Install for Humans
 
 ```bash
+# Clone
 git clone https://github.com/rickicode/patchright-browser.git
 cd patchright-browser
+
+# Install
 bash install.sh
-```
 
-## Mulai
-
-```bash
-# Start MCP server
+# Start
 ~/.patchright-browser/start.sh
-
-# Start dashboard (opsional)
-~/.patchright-browser/start-dashboard.sh
 ```
 
-**MCP Server:** `http://127.0.0.1:9877/mcp/`
-**Dashboard:** `http://localhost:9878` (password: `hijilabs7`)
+Server: `http://127.0.0.1:9877/mcp/`
 
-## Konfigurasi MCP
+## MCP Config
 
-Tambahkan ke config MCP client:
+### Hermes
 
 ```yaml
 # ~/.hermes/config.yaml
-patchright:
-  url: http://127.0.0.1:9877/mcp/
-  connect_timeout: 30
-  enabled: true
+mcp_servers:
+  patchright:
+    url: http://127.0.0.1:9877/mcp/
+    connect_timeout: 30
+    enabled: true
 ```
 
-## MCP Tools
+### Claude Desktop
 
-### Browser Control
+```json
+{
+  "mcpServers": {
+    "patchright": {
+      "url": "http://127.0.0.1:9877/mcp/"
+    }
+  }
+}
+```
 
-| Tool | Fungsi |
-|------|--------|
-| `browser_navigate` | Buka URL |
-| `browser_click` | Klik elemen |
-| `browser_type` | Ketik text |
-| `browser_snapshot` | Ambil accessibility tree |
-| `browser_take_screenshot` | Screenshot halaman |
-| `browser_run_code` | Jalankan JavaScript/Playwright |
-| `browser_tabs` | Manage tabs (list/new/close/select) |
-| `browser_press_key` | Tekan keyboard key |
-| `browser_wait_for` | Tunggu text/time |
+### Cursor / VS Code
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "patchright": {
+        "type": "http",
+        "url": "http://127.0.0.1:9877/mcp/"
+      }
+    }
+  }
+}
+```
+
+## Tools
+
+### Browser
+
+| Tool | Description |
+|------|-------------|
+| `browser_navigate` | Open URL |
+| `browser_click` | Click element by ref |
+| `browser_type` | Type text into element |
+| `browser_snapshot` | Get page structure |
+| `browser_take_screenshot` | Capture screenshot |
+| `browser_run_code` | Execute Playwright JS |
+| `browser_tabs` | Manage tabs |
+| `browser_press_key` | Press keyboard key |
+| `browser_wait_for` | Wait for text/time |
 | `browser_file_upload` | Upload file |
-| `browser_console` | Baca console output |
-| `browser_evaluate` | Evaluate JavaScript |
+| `browser_console` | Read console |
+| `browser_evaluate` | Run JavaScript |
 
-### Profile Management
+### Profiles
 
-| Tool | Fungsi |
-|------|--------|
-| `profile_list` | List semua profiles |
-| `profile_create` | Buat profile baru |
-| `profile_open` | Buka browser untuk profile |
-| `profile_close` | Tutup browser |
-| `profile_update` | Update profile settings |
-| `profile_delete` | Hapus profile |
-| `profile_set_default` | Set default profile |
-| `profile_inspect` | Deep state inspection |
+| Tool | Description |
+|------|-------------|
+| `profile_list` | List all profiles |
+| `profile_create` | Create profile |
+| `profile_open` | Start browser |
+| `profile_close` | Stop browser |
+| `profile_update` | Update settings |
+| `profile_delete` | Delete profile |
 
-### Proxy Management
+### Proxy
 
-| Tool | Fungsi |
-|------|--------|
-| `proxy_add` | Tambah proxy |
+| Tool | Description |
+|------|-------------|
+| `proxy_add` | Add proxy |
 | `proxy_list` | List proxies |
-| `proxy_get` | Detail proxy |
-| `proxy_delete` | Hapus proxy |
+| `proxy_delete` | Remove proxy |
 
-## Contoh Penggunaan
+## Usage
 
-### Buka website
 ```python
-mcp_patchright_browser_navigate(url="https://example.com", profile="default")
-```
+# Open page
+mcp_patchright_browser_navigate(url="https://example.com")
 
-### Klik tombol
-```python
-mcp_patchright_browser_snapshot(profile="default")  # ambil ref ID
-mcp_patchright_browser_click(ref="e5", profile="default")
-```
+# Get page structure
+mcp_patchright_browser_snapshot()
 
-### Isi form
-```python
-mcp_patchright_browser_type(ref="e10", text="hello world", profile="default")
-```
+# Click element
+mcp_patchright_browser_click(ref="e5")
 
-### Screenshot
-```python
-mcp_patchright_browser_take_screenshot(profile="default")
-```
+# Type text
+mcp_patchright_browser_type(ref="e10", text="hello")
 
-### Jalankan JavaScript
-```python
+# Take screenshot
+mcp_patchright_browser_take_screenshot()
+
+# Run JavaScript
 mcp_patchright_browser_run_code(
-    code="async (page) => { return await page.title(); }",
-    profile="default"
+    code="async (page) => await page.title()"
 )
 ```
 
-### Extract data dari halaman
+## Profiles
+
+Isolated browser contexts with separate cookies/sessions.
+
 ```python
-mcp_patchright_browser_run_code(
-    code="""async (page) => {
-  return await page.evaluate(() => {
-    const items = document.querySelectorAll('.item');
-    return [...items].map(el => ({
-      title: el.querySelector('h3')?.textContent,
-      link: el.querySelector('a')?.href,
-    }));
-  });
-}""",
-    profile="default"
-)
+# Create profile
+mcp_patchright_profile_create(name="work", caps=["vision"])
+
+# Open browser
+mcp_patchright_profile_open(name="work", mode="headed")
+
+# Use profile
+mcp_patchright_browser_navigate(url="https://example.com", profile="work")
+
+# Close
+mcp_patchright_profile_close(name="work")
 ```
 
-### Upload file
-```python
-mcp_patchright_browser_run_code(
-    code="""async (page) => {
-  const [chooser] = await Promise.all([
-    page.waitForEvent('filechooser'),
-    page.getByRole('button', { name: 'Upload' }).click()
-  ]);
-  await chooser.setFiles('/path/to/file.png');
-}""",
-    profile="default"
-)
-```
+## Dashboard
 
-### Multi-tab
-```python
-# Buka tab baru
-mcp_patchright_browser_tabs(action="new", profile="default")
+Web UI for managing profiles.
 
-# Switch tab
-mcp_patchright_browser_tabs(action="select", index=1, profile="default")
-
-# List tabs
-mcp_patchright_browser_tabs(action="list", profile="default")
+```bash
+~/.patchright-browser/start-dashboard.sh
+# http://localhost:9878 (password: hijilabs7)
 ```
 
 ## Skills
 
-Install skills untuk automasi common tasks:
+Install Hermes skills for social media automation:
 
 ```bash
 cp -r skills/* ~/.hermes/skills/
 ```
 
-### x-search
-Cari & extract data dari X/Twitter:
-```
-cari di x tentang AI agent
-search x "free credits" dengan filter:links
-extract replies dari post tertentu
-```
-
-### threads-search
-Cari & extract data dari Threads:
-```
-cari threads tentang startup AI
-search threads "promo code" filter:recent
-extract comments dari post
-```
-
-### instagram-automation
-Instagram DM, post, comment, story:
-```
-kirim DM ke user di Instagram
-post foto ke Instagram
-comment di post Instagram
-```
-
-### threads-automation
-Threads post, reply, DM:
-```
-post ke Threads
-reply ke post Threads
-DM di Threads
-```
-
-### x-automation
-X.com post, reply, DM:
-```
-post tweet
-reply ke tweet
-DM di X
-```
+| Skill | Description |
+|-------|-------------|
+| `x-search` | Search & extract X/Twitter data |
+| `threads-search` | Search & extract Threads data |
+| `instagram-automation` | Instagram DM, post, comment |
+| `threads-automation` | Threads post, reply, DM |
+| `x-automation` | X.com post, reply, DM |
 
 ## Uninstall
 
 ```bash
-bash ~/.patchright-browser/uninstall.sh           # hapus semua
-bash ~/.patchright-browser/uninstall.sh --keep-data  # simpan profiles
-```
-
-## Data Directory
-
-```
-~/.patchright-browser/
-├── profiles/          # browser data (cookies, sessions)
-│   ├── default/       # chromium data
-│   └── default.json   # profile config
-├── profiles.json      # registry
-├── configs/           # patchright config JSONs
-├── proxies.json       # proxy configurations
-├── thumbnails/        # screenshots
-├── logs/              # bridge logs
-├── bin/               # bridge scripts
-├── lib/               # Python modules
-├── dashboard.py       # web dashboard
-├── start.sh           # bridge launcher
-└── start-dashboard.sh # dashboard launcher
+bash ~/.patchright-browser/uninstall.sh
 ```
 
 ## License
