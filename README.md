@@ -1,81 +1,30 @@
 # Patchright Browser
 
-MCP server for browser automation via [Patchright](https://github.com/nicobailey/patchright). Multi-profile, multi-mode (headed/headless), StreamableHTTP MCP protocol.
+MCP server for browser automation via [Patchright](https://github.com/nicobailey/patchright). Multi-profile, multi-mode (headed/headless), StreamableHTTP protocol.
 
-## Install
+## For AI Agents
+
+If you're an AI agent reading this repo, follow these steps to install and configure:
+
+### 1. Clone & Install
 
 ```bash
-git clone https://github.com/YOUR_USER/patchright-browser.git
+git clone https://github.com/rickicode/patchright-browser.git
 cd patchright-browser
 bash install.sh
 ```
 
-## Quick Start
+### 2. Start MCP Server
 
 ```bash
-# Start bridge
 ~/.patchright-browser/start.sh
-
-# Start dashboard (password: hijilabs7)
-~/.patchright-browser/start-dashboard.sh
 ```
 
-**Bridge:** `http://127.0.0.1:9877/mcp/`
-**Dashboard:** `http://localhost:9878`
+Server runs at `http://127.0.0.1:9877/mcp/` (StreamableHTTP MCP protocol).
 
-## Uninstall
+### 3. Configure Your MCP Client
 
-```bash
-bash uninstall.sh           # remove everything
-bash uninstall.sh --keep-data  # keep profiles
-```
-
-## Architecture
-
-```
-AI Agent (Hermes) ──→ patchright-browser (port 9877) ──→ Chromium
-                   StreamableHTTP MCP                   per profile
-```
-
-## Features
-
-- **Multi-profile** — isolated browser contexts (cookies, sessions)
-- **Multi-mode** — headed (GUI) + headless per profile simultaneously
-- **MCP Protocol** — StreamableHTTP, works with any MCP client
-- **Auto-detect GUI** — defaults to headed if display available
-- **Dashboard** — password-protected web UI for profile management
-- **Orphan cleanup** — kills stale Chromium processes on spawn
-
-## Profiles
-
-```bash
-# Create profile
-mcp_patchright_profile_create name=myprofile caps=["vision"]
-
-# Open browser
-mcp_patchright_profile_open name=myprofile mode=headed
-
-# List profiles
-mcp_patchright_profile_list
-
-# Delete profile
-mcp_patchright_profile_delete name=myprofile
-```
-
-## Dashboard
-
-Password-protected web UI at `http://localhost:9878`.
-
-- List all profiles with status
-- View active tabs per profile
-- See uptime, last used, viewport, caps
-- Login/logout with session cookies
-
-Default password: `hijilabs7` (change in `dashboard.py`)
-
-## Hermes Config
-
-Add to `~/.hermes/config.yaml`:
+Add to your MCP config (`~/.hermes/config.yaml` or equivalent):
 
 ```yaml
 patchright:
@@ -84,46 +33,95 @@ patchright:
   enabled: true
 ```
 
-## MCP Tools
+Or add via CLI:
+```bash
+hermes mcp add patchright http://127.0.0.1:9877/mcp/
+```
 
-| Tool | Description |
-|------|-------------|
-| `browser_navigate` | Navigate to URL |
-| `browser_click` | Click element |
-| `browser_type` | Type text |
-| `browser_snapshot` | Get accessibility tree |
-| `browser_take_screenshot` | Screenshot |
-| `browser_run_code` | Execute Playwright JS |
-| `browser_tabs` | List/create/close tabs |
-| `browser_press_key` | Press keyboard key |
-| `browser_wait_for` | Wait for text/time |
-| `browser_file_upload` | Upload files |
-| `profile_*` | Profile management |
-| `proxy_*` | Proxy management |
+### 4. Install Skills (Optional)
 
-## Skills
+Copy automation skills to your skills directory:
 
-Hermes skills for common automation tasks:
+```bash
+cp -r skills/* ~/.hermes/skills/
+```
 
-| Skill | Description |
-|-------|-------------|
-| `x-search` | X.com search & data extraction |
-| `threads-search` | Threads search & data extraction |
-| `instagram-automation` | Instagram DM, post, story |
-| `threads-automation` | Threads post, reply, DM |
-| `x-automation` | X.com post, reply, DM |
-| `promo-hunter` | AI startup promo scanning |
+Skills available:
+- `x-search` — X.com search & data extraction
+- `threads-search` — Threads search & data extraction
+- `instagram-automation` — Instagram DM, post, comment
+- `threads-automation` — Threads post, reply, DM
+- `x-automation` — X.com post, reply, DM
+
+### 5. Verify Installation
+
+```bash
+# Health check
+curl http://127.0.0.1:9877/mcp/
+
+# Test via MCP tool
+mcp_patchright_browser_health profile=default
+
+# List profiles
+mcp_patchright_profile_list
+```
+
+### 6. Dashboard (Optional)
+
+```bash
+~/.patchright-browser/start-dashboard.sh
+# Open http://localhost:9878 (password: hijilabs7)
+```
+
+## Quick Reference
+
+```bash
+# Start/stop
+~/.patchright-browser/start.sh          # Start MCP server
+~/.patchright-browser/start-dashboard.sh # Start dashboard
+
+# Uninstall
+bash uninstall.sh           # Remove everything
+bash uninstall.sh --keep-data  # Keep profiles
+
+# Profiles
+mcp_patchright_profile_list              # List profiles
+mcp_patchright_profile_create name=foo   # Create profile
+mcp_patchright_profile_open name=foo     # Open browser
+mcp_patchright_profile_close name=foo    # Close browser
+
+# Browser automation
+mcp_patchright_browser_navigate url=https://example.com profile=default
+mcp_patchright_browser_snapshot profile=default
+mcp_patchright_browser_click ref=e5 profile=default
+mcp_patchright_browser_type ref=e10 text="hello" profile=default
+mcp_patchright_browser_take_screenshot profile=default
+mcp_patchright_browser_run_code code="async (page) => { return await page.title(); }" profile=default
+```
+
+## Architecture
+
+```
+AI Agent ──→ patchright-browser (port 9877) ──→ Chromium
+             StreamableHTTP MCP               per profile
+```
+
+## Features
+
+- **Multi-profile** — isolated browser contexts (cookies, sessions)
+- **Multi-mode** — headed (GUI) + headless per profile simultaneously
+- **MCP Protocol** — StreamableHTTP, works with any MCP client
+- **Auto-detect GUI** — defaults to headed if display available
+- **Dashboard** — password-protected web UI
+- **Orphan cleanup** — kills stale Chromium on spawn
 
 ## Data Directory
 
 ```
 ~/.patchright-browser/
 ├── profiles/          # browser data (cookies, sessions)
-│   ├── default/       # chromium data
-│   └── default.json   # profile config
 ├── profiles.json      # registry
 ├── configs/           # patchright config JSONs
-├── proxies.json       # proxy configurations
 ├── thumbnails/        # screenshots
 ├── logs/              # bridge logs
 ├── bin/               # bridge scripts
@@ -132,6 +130,31 @@ Hermes skills for common automation tasks:
 ├── start.sh           # bridge launcher
 └── start-dashboard.sh # dashboard launcher
 ```
+
+## MCP Tools Reference
+
+| Tool | Description |
+|------|-------------|
+| `browser_navigate` | Navigate to URL |
+| `browser_click` | Click element by ref |
+| `browser_type` | Type text into element |
+| `browser_snapshot` | Get accessibility tree |
+| `browser_take_screenshot` | Capture screenshot |
+| `browser_run_code` | Execute Playwright JS |
+| `browser_tabs` | List/create/close tabs |
+| `browser_press_key` | Press keyboard key |
+| `browser_wait_for` | Wait for text/time |
+| `browser_file_upload` | Upload files |
+| `browser_console` | Get console output |
+| `browser_evaluate` | Evaluate JS expression |
+| `profile_list` | List all profiles |
+| `profile_create` | Create new profile |
+| `profile_open` | Spawn browser |
+| `profile_close` | Kill browser |
+| `profile_update` | Update profile fields |
+| `profile_delete` | Delete profile |
+| `proxy_add` | Add proxy config |
+| `proxy_list` | List proxies |
 
 ## License
 
