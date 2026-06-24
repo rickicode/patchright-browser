@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 *.pyo
-*.png
+*
 *.jpg
 *.jpeg
 *.gif
