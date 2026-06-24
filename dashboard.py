@@ -120,6 +120,7 @@ LOGIN_HTML = '''<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Login — Patchright Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <style>
@@ -234,6 +235,7 @@ def build_html():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Patchright Browser Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <style>
@@ -295,6 +297,16 @@ body{{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-s
 class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
+
+        if parsed.path == "/favicon.svg":
+            favicon_path = os.path.join(os.path.dirname(__file__), "favicon.svg")
+            if os.path.exists(favicon_path):
+                self.send_response(200)
+                self.send_header("Content-Type", "image/svg+xml")
+                self.end_headers()
+                with open(favicon_path, "rb") as f:
+                    self.wfile.write(f.read())
+                return
 
         if parsed.path == "/logout":
             cookie = self.headers.get("Cookie", "")
