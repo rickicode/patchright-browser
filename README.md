@@ -5,6 +5,32 @@
 
 Browser automation MCP server. Gives AI agents a real Chromium browser — navigate, click, type, screenshot, extract data.
 
+<p align="center">
+  <img src="favicon.svg" width="100" alt="Patchright Browser">
+</p>
+
+## Use Cases
+
+- **Social media automation** — Post, reply, DM on X/Twitter, Threads, Instagram
+- **Web scraping** — Extract data from any website
+- **Form automation** — Fill and submit forms automatically
+- **Screenshot monitoring** — Capture website state for tracking
+- **Multi-account management** — Isolated browser profiles for each account
+- **Browser-based research** — Browse and collect information
+
+## Dashboard
+
+Password-protected web UI for managing browser profiles.
+
+<p align="center">
+  <img src="dashboard-screenshot.png" width="800" alt="Dashboard">
+</p>
+
+- View all browser profiles with status
+- See online/offline status
+- Check active tabs per profile
+- Monitor uptime and last used time
+
 ## Quick Start
 
 ### Claude Code
@@ -164,15 +190,6 @@ mcp_patchright_browser_navigate(url="https://example.com", profile="work")
 
 # Cleanup
 mcp_patchright_profile_close(name="work")
-```
-
-## Dashboard
-
-Web UI for profile management.
-
-```bash
-~/.patchright-browser/start-dashboard.sh
-# http://localhost:9878 (password: hijilabs7)
 ```
 
 ## Skills
