@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.png
+*.jpg
+*.jpeg
+*.gif
+thumbnails/
+logs/
+profiles/
+configs/
+proxies.json
+*.tmp
+*.log
+.env
